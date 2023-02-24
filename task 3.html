@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .card-image {
+            display: block;
+            width: 200px;
+            height: 150px;
+        }
+        .card, {
+            margin-top: 30px;
+        }
+
+        .btn {
+            margin-top: 10px;
+            width: 220px;
+            height: 60px;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+            padding: .8em 1em calc(.8em + 3px);
+            border-radius: 3px;
+            background: rgb(64,199,129);
+            box-shadow: 0 -3px rgb(53,167,110) inset;
+            transition: 0.2s;
+        }
+        .btn:hover { background: rgb(53, 167, 110); }
+        .btn:active {
+        background: rgb(33,147,90);
+        box-shadow: 0 3px rgb(33,147,90) inset;
+        }
+        .inp {
+            width: 220px;
+            resize: vertical;
+            padding:15px;
+            border-radius:15px;
+            
+            box-shadow:4px 4px 10px rgba(0,0,0,0.06);
+            height:50px;
+        }
+
+
+    </style>
+
+</head>
+<body>
+    <form>
+        <input type="text" name="value" class="inp">
+    </form>
+    <button class="btn">Кнопочка</button>
+    <div id="container"></div>
+
+    <script>
+
+        const div = document.getElementById("container");
+
+        function useRequest(value, displayResult){
+
+            let xhr = new XMLHttpRequest();
+
+            xhr.open('GET', `https://picsum.photos/v2/list/?limit=${value}`);
+
+            xhr.onload = function() {
+                if (xhr.status != 200) {
+                    console.log("Статус ответа: ", xhr.status);
+                } else{
+                    let apiData = JSON.parse(xhr.response);
+                    console.log(apiData);
+                    displayResult(apiData);
+                }
+            };
+
+            xhr.send();
+
+        };
+
+        function displayResult(apiData) {
+            let cards = '';            
+            apiData.forEach(item => {
+                const cardBlock = `
+                <div class="card">
+                    <img src="${item.download_url}" class="card-image"/>
+                </div>
+                `;
+                cards = cards + cardBlock;
+            });
+            div.innerHTML = cards;
+        }
+
+        function readInput() {
+            const value = document.querySelector('input').value;
+            if (value < 1 || value > 10){
+                div.innerHTML = 'число вне диапазона от 1 до 10';
+            } else {
+                useRequest(value, displayResult);
+            }
+        };
+
+        const btn = document.querySelector(".btn");
+        btn.addEventListener("click", readInput);
+
+    </script>
+
+</body>
+</html>
